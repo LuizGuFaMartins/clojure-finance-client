@@ -1,0 +1,13 @@
+{:paths ["src" "resources"]
+
+ :deps
+ {reagent/reagent {:mvn/version "1.2.0"}
+  re-frame/re-frame {:mvn/version "1.4.3"}
+  day8.re-frame/http-fx {:mvn/version "0.2.4"}
+  metosin/reitit-frontend {:mvn/version "0.9.2"}
+  cljs-ajax/cljs-ajax {:mvn/version "0.7.5"}
+  thheller/shadow-cljs {:mvn/version "3.3.4"}}
+
+ :aliases
+ {:shadow
+  {:main-opts ["-m" "shadow.cljs.devtools.cli"]}}}
