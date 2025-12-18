@@ -18,6 +18,15 @@
 
 ;; User data
 (rf/reg-event-fx
+ :users/load
+ (fn [{:keys [db]} [_]]
+   {:db (assoc db :user/loading? true)
+    :http-xhrio
+    (api/fetch-users
+     [:users/load-success]
+     [:user/load-failure])}))
+
+(rf/reg-event-fx
  :user/load
  (fn [{:keys [db]} [_ user-id]]
    {:db (assoc db :user/loading? true)
@@ -35,6 +44,13 @@
        (assoc :user/loading? false))))
 
 (rf/reg-event-db
+ :users/load-success
+ (fn [db [_ users]]
+   (-> db
+       (assoc :admin/users users)
+       (assoc :user/loading? false))))
+
+(rf/reg-event-db
  :user/load-failure
  (fn [db [_ error]]
    (-> db
@@ -47,7 +63,7 @@
  (fn [{:keys [db]} [_ user-id]]
    {:db (assoc db :bank-data/loading? true)
     :http-xhrio
-    (api/fetch-user
+    (api/fetch-user-bank-data
      user-id
      [:bank-data/load-success]
      [:bank-data/load-failure])}))

@@ -1,1 +1,0 @@
-["^ ","~$page",["^ ","~:row",6,"~:col",1,"~:fixed-arities",["~#set",[1]],"~:name","^0","~:ns","~$clojure-finance-client.pages.user","~:top-ns","^7","~:arities",["^ ","~i1",["^ ","~:ret","~:vector","~:arglist-str","[{:keys [user-id]}]"]],"~:type","~:fn"],"~:filename","/home/luiz.martins/Projects/clojure-finance-client/src/clojure_finance_client/pages/user.cljs"]
