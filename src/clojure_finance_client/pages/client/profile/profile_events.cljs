@@ -20,13 +20,6 @@
        (assoc :user/profile user)
        (assoc :user/loading? false))))
 
-(rf/reg-event-db
- :users/load-success
- (fn [db [_ users]]
-   (-> db
-       (assoc :admin/users users)
-       (assoc :user/loading? false))))
-
 ;; Bank data
 (rf/reg-event-fx
  :bank-data/load

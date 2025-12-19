@@ -29,7 +29,6 @@
       (js/console.error "Token inválido" e)
       nil)))
 
-
 (rf/reg-event-db
  :auth/check-session
  (fn [db _]
@@ -61,6 +60,14 @@
  :api/handle-failure
  (fn [{:keys [db]} [_ {:keys [status] :as error}]]
    (js/console.error "Erro na API:" error)
-   (if (= status 401)
-     {:dispatch [:auth/logout]}
-     {:db (assoc db :api-error error)})))
+   (let [base-db (assoc db :login/loading? false
+                        :user/loading? false
+                        :login/error "Usuário ou senha inválidos")]
+     (if (= status 401)
+       {:db base-db
+        :dispatch [:auth/logout]}
+       {:db base-db}))))
+
+
+   
+

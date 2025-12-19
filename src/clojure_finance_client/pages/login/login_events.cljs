@@ -3,25 +3,26 @@
    [clojure-finance-client.api :as api]
    [clojure.string :as str]
    [day8.re-frame.http-fx]
-   [reitit.frontend.easy :as rfe]
-   [re-frame.core :as rf]))
+   [re-frame.core :as rf]
+   [reitit.frontend.easy :as rfe]))
 
 (rf/reg-event-db
  :set-login-field
  (fn [db [_ field value]]
-   (assoc-in db [:login-form field] value)))
+   (assoc-in db [:login/login-form field] value)))
 
 (rf/reg-event-fx
  :login-request
  (fn [{:keys [db]} _]
-   (let [credentials (:login-form db)
+   (let [credentials (:login/login-form db)
          {:keys [email password]} credentials]
      (cond
        (or (str/blank? email) (str/blank? password))
-       {:dispatch [:api/handle-failure {:response {:error "Preencha todos os campos"}}]}
+       {:db (assoc db :login/loading? false)
+        :dispatch [:api/handle-failure {:status 400 :response {:error "Preencha todos os campos"}}]}
 
        :else
-       {:db (assoc db :loading? true :login-error nil)
+       {:db (assoc db :login/loading? true :login/error nil)
         :http-xhrio (api/login
                      credentials
                      [:login-success]
@@ -38,8 +39,8 @@
 
      {:db (-> db
               (assoc :current-user user)
-              (assoc :loading? false)
-              (dissoc :login-form))
+              (assoc :login/loading? false)
+              (dissoc :login/login-form))
       :dispatch [:navigate-by-role role]})))
 
 (rf/reg-event-fx

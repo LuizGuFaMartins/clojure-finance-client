@@ -2,15 +2,16 @@
   (:require
    [clojure.string :as str]
    [re-frame.core :as rf]
-   [reagent.core :as r]))
+   [reagent.core :as r]
+   [reitit.frontend.easy :as rfe]))
 
 (defn page []
   (r/create-class
    {:reagent-render
     (fn [_]
-      (let [form-data (rf/subscribe [:login-form])
-            loading?  (rf/subscribe [:loading?])
-            error     (rf/subscribe [:login-error])
+      (let [form-data (rf/subscribe [:login/login-form])
+            loading?  (rf/subscribe [:login/loading?])
+            error     (rf/subscribe [:login/error])
             fields-empty? (or (str/blank? (:email @form-data))
                               (str/blank? (:password @form-data)))]
 
@@ -66,11 +67,16 @@
 
              (if @loading?
                [:span {:class "flex items-center"}
-                [:svg {:class "animate-spin -ml-1 mr-3 h-5 w-5 text-white" :xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24"}
+                [:svg {:class "animate-spin -ml-1 mr-3 h-5 w-5 text-white" :fill "none" :viewBox "0 0 24 24"}
                  [:circle {:class "opacity-25" :cx "12" :cy "12" :r "10" :stroke "currentColor" :stroke-width "4"}]
                  [:path {:class "opacity-75" :fill "currentColor" :d "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"}]]
                 "Autenticando..."]
                "Entrar")]]]
 
           [:p {:class "mt-6 text-slate-500 text-xs text-center"}
-           "Esqueceu sua senha? " [:a {:href "#" :class "text-blue-400 hover:underline"} "Recuperar"]]]]))}))
+           "Esqueceu sua senha? " [:a {:href "#"
+                                       :class "text-blue-400 hover:underline"
+                                       :on-click (fn [e]
+                                                   (.preventDefault e)
+                                                   (rfe/push-state :forgot-password))}
+                                   "Recuperar"]]]]))}))

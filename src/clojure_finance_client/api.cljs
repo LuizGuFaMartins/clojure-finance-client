@@ -26,6 +26,36 @@
    :on-success      on-success
    :on-failure      on-error})
 
+(defn request-password-code
+  [credentials on-success on-error]
+  {:method          :post
+   :uri             (str base-url "/login")
+   :params          credentials
+   :format          (ajax/json-request-format)
+   :response-format (ajax/json-response-format {:keywords? true})
+   :on-success      on-success
+   :on-failure      on-error})
+
+(defn verify-reset-code
+  [credentials on-success on-error]
+  {:method          :post
+   :uri             (str base-url "/login")
+   :params          credentials
+   :format          (ajax/json-request-format)
+   :response-format (ajax/json-response-format {:keywords? true})
+   :on-success      on-success
+   :on-failure      on-error})
+
+(defn reset-password
+  [credentials on-success on-error]
+  {:method          :post
+   :uri             (str base-url "/login")
+   :params          credentials
+   :format          (ajax/json-request-format)
+   :response-format (ajax/json-response-format {:keywords? true})
+   :on-success      on-success
+   :on-failure      on-error})
+
 (defn fetch-user [user-id on-success on-error]
   (authenticated-request :get (str "/users/" user-id) on-success on-error))
 

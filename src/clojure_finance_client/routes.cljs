@@ -2,6 +2,7 @@
   (:require
    [clojure-finance-client.pages.admin.users-list.users-list-view :as users-list]
    [clojure-finance-client.pages.client.profile.profile-view :as profile]
+   [clojure-finance-client.pages.forgot-password.forgot-password-view :as forgot-password]
    [clojure-finance-client.pages.login.login-view :as login]
    [re-frame.core :as rf]
    [re-frame.db :refer [app-db]]
@@ -14,6 +15,10 @@
     ["/" {:name :login
           :view login/page
           :public? true}]
+
+    ["/forgot-password" {:name :forgot-password
+                         :view forgot-password/page
+                         :public? true}]
 
     ["/admin" {:name :admin
                :view users-list/page
