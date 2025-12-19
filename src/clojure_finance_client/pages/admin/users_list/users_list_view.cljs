@@ -1,4 +1,4 @@
-(ns clojure-finance-client.pages.admin
+(ns clojure-finance-client.pages.admin.users-list.users-list-view
   (:require
    [re-frame.core :as rf]
    [reagent.core :as reagent]

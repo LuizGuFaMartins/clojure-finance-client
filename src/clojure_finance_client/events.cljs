@@ -1,10 +1,9 @@
 (ns clojure-finance-client.events
   (:require
-   [re-frame.core :as rf]
    [clojure-finance-client.db :as db]
-   [day8.re-frame.http-fx]
-   [day8.re-frame.http-fx]
-   [clojure-finance-client.api :as api]))
+   [clojure.string :as s]
+   [re-frame.core :as rf]
+   [reitit.frontend.easy :as rfe]))
 
 (rf/reg-event-db
  :navigate
@@ -16,68 +15,52 @@
  (fn [_ _]
    db/default-db))
 
-;; User data
+(defn decode-jwt [token]
+  (try
+    (let [payload (second (clojure.string/split token #"\."))
+          json-str (js/window.atob payload)
+          claims (js->clj (.parse js/JSON json-str) :keywordize-keys true)
+          exp (:exp claims)
+          now (/ (.now js/Date) 1000)]
+      (if (and exp (< now exp))
+        claims
+        (do (js/console.warn "Token expirado") nil)))
+    (catch js/Error e
+      (js/console.error "Token inválido" e)
+      nil)))
+
+
+(rf/reg-event-db
+ :auth/check-session
+ (fn [db _]
+   (let [token (.getItem js/localStorage "token")
+         claims (when token (decode-jwt token))]
+     (if claims
+       (assoc db :current-user claims
+              :current-user-id (:id claims))
+       (do
+         (.removeItem js/localStorage "token")
+         (dissoc db :current-user :current-user-id))))))
+
 (rf/reg-event-fx
- :users/load
- (fn [{:keys [db]} [_]]
-   {:db (assoc db :user/loading? true)
-    :http-xhrio
-    (api/fetch-users
-     [:users/load-success]
-     [:user/load-failure])}))
+ :auth/logout
+ (fn [{:keys [db]} _]
+   (.removeItem js/localStorage "token")
+   {:db (-> db
+            (dissoc :current-user)
+            (dissoc :current-user-id))
+    :dispatch [:navigate-to-login]}))
 
 (rf/reg-event-fx
- :user/load
- (fn [{:keys [db]} [_ user-id]]
-   {:db (assoc db :user/loading? true)
-    :http-xhrio
-    (api/fetch-user
-     user-id
-     [:user/load-success]
-     [:user/load-failure])}))
+ :navigate-to-login
+ (fn [_ _]
+   (rfe/replace-state :login)
+   {}))
 
-(rf/reg-event-db
- :user/load-success
- (fn [db [_ user]]
-   (-> db
-       (assoc :user/profile user)
-       (assoc :user/loading? false))))
-
-(rf/reg-event-db
- :users/load-success
- (fn [db [_ users]]
-   (-> db
-       (assoc :admin/users users)
-       (assoc :user/loading? false))))
-
-(rf/reg-event-db
- :user/load-failure
- (fn [db [_ error]]
-   (-> db
-       (assoc :user/error error)
-       (assoc :user/loading? false))))
-
-;; Bank data
 (rf/reg-event-fx
- :bank-data/load
- (fn [{:keys [db]} [_ user-id]]
-   {:db (assoc db :bank-data/loading? true)
-    :http-xhrio
-    (api/fetch-user-bank-data
-     user-id
-     [:bank-data/load-success]
-     [:bank-data/load-failure])}))
-
-(rf/reg-event-db
- :bank-data/load-success
- (fn [db [_ bank-data]]
-   (-> db
-       (assoc :user/bank-data bank-data)
-       (assoc :user/loading? false))))
-
-(rf/reg-event-db
- :bank-data/load-failure
- (fn [db [_ error]]
-   (-> db
-       (assoc :user/error error)
-       (assoc :user/loading? false))))
+ :api/handle-failure
+ (fn [{:keys [db]} [_ {:keys [status] :as error}]]
+   (js/console.error "Erro na API:" error)
+   (if (= status 401)
+     {:dispatch [:auth/logout]}
+     {:db (assoc db :api-error error)})))

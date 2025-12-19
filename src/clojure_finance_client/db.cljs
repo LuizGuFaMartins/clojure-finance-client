@@ -1,7 +1,11 @@
 (ns clojure-finance-client.db)
 
 (def default-db
-  {:admin/users []
+  {
+   :login-form {:email "" :password ""} ; Adicione isso aqui
+   :current-user nil
+   
+   :admin/users []
    :admin/loading? false
    :admin/error nil
 
