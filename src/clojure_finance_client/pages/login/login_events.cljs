@@ -1,6 +1,6 @@
 (ns clojure-finance-client.pages.login.login-events
   (:require
-   [clojure-finance-client.api :as api]
+   [clojure-finance-client.shared.api :as api]
    [clojure.string :as str]
    [day8.re-frame.http-fx]
    [re-frame.core :as rf]

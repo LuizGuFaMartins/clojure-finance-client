@@ -1,4 +1,4 @@
-(ns clojure-finance-client.db)
+(ns clojure-finance-client.shared.db)
 
 (def default-db
   {:login/login-form {:email "" :password ""}
@@ -15,4 +15,9 @@
    :user/current-user nil
    :user/profile nil
    :user/bank-data nil
-   :user/loading? false})
+   :user/loading? false
+
+   :confirmation-modal {:show? false
+                        :title ""
+                        :message ""
+                        :on-confirm nil}})

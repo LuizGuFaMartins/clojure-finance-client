@@ -1,6 +1,6 @@
-(ns clojure-finance-client.events
+(ns clojure-finance-client.shared.events
   (:require
-   [clojure-finance-client.db :as db]
+   [clojure-finance-client.shared.db :as db]
    [clojure.string :as s]
    [re-frame.core :as rf]
    [reitit.frontend.easy :as rfe]))

@@ -1,6 +1,6 @@
 (ns clojure-finance-client.pages.forgot-password.forgot-password-events
   (:require
-   [clojure-finance-client.api :as api]
+   [clojure-finance-client.shared.api :as api]
    [re-frame.core :as rf]))
 
 (rf/reg-event-db

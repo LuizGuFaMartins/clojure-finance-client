@@ -1,6 +1,5 @@
 (ns clojure-finance-client.core
   (:require
-   [clojure-finance-client.events]
    [clojure-finance-client.pages.admin.users-list.users-list-events]
    [clojure-finance-client.pages.admin.users-list.users-list-subs]
    [clojure-finance-client.pages.admin.users-list.users-list-view]
@@ -14,7 +13,11 @@
    [clojure-finance-client.pages.login.login-subs]
    [clojure-finance-client.pages.login.login-view]
    [clojure-finance-client.routes :as routes]
-   [clojure-finance-client.subs]
+   [clojure-finance-client.shared.components.confirmation-modal.confirmation-modal-events]
+   [clojure-finance-client.shared.components.confirmation-modal.confirmation-modal-subs]
+   [clojure-finance-client.shared.components.confirmation-modal.confirmation-modal-view]
+   [clojure-finance-client.shared.events]
+   [clojure-finance-client.shared.subs]
    [clojure-finance-client.views :as views]
    [re-frame.core :as rf]
    [reagent.dom.client :as rdom]))

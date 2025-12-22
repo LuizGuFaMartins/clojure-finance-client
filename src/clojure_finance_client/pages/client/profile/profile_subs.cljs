@@ -21,3 +21,13 @@
  :current-user-id
  (fn [db _]
    (get-in db [:current-user :id])))
+
+(rf/reg-sub
+ :bank-data/users
+ (fn [db _]
+   (:bank-data/users db)))
+
+(rf/reg-sub :bank-data/modal (fn [db _] (:bank-data/modal db)))
+
+(rf/reg-sub :bank-data/form (fn [db _] (:bank-data/form db)))
+

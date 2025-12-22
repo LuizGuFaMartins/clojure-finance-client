@@ -1,4 +1,4 @@
-(ns clojure-finance-client.subs
+(ns clojure-finance-client.shared.subs
   (:require
    [re-frame.core :as rf]))
 
