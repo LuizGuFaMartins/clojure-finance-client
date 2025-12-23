@@ -103,7 +103,6 @@
               :else
               [:div {:class "space-y-8"}
 
-
                [:div {:class "grid grid-cols-1 md:grid-cols-2 gap-4"}
                 [:div {:class "bg-slate-900/50 border border-slate-800 p-4 rounded-xl"}
                  [:p {:class "text-slate-500 text-xs uppercase tracking-wider mb-1"} "Saldo em Conta"]
@@ -114,7 +113,6 @@
                   [:p {:class "text-slate-500 text-xs uppercase tracking-wider mb-1"} "Status da Conta"]
                   [:p {:class "text-sm font-medium text-slate-200"} (if (:active user) "Ativa" "Inativa")]]
                  [:div {:class (str "h-3 w-3 rounded-full " (if (:active user) "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" "bg-red-500"))}]]]
-
 
                [:section
                 [:h2 {:class "text-xs font-uppercase tracking-widest text-slate-500 mb-4 uppercase"} "Informações Pessoais"]

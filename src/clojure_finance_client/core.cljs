@@ -16,9 +16,10 @@
    [clojure-finance-client.shared.components.confirmation-modal.confirmation-modal-events]
    [clojure-finance-client.shared.components.confirmation-modal.confirmation-modal-subs]
    [clojure-finance-client.shared.components.confirmation-modal.confirmation-modal-view]
+   [clojure-finance-client.auth.auth-events]
    [clojure-finance-client.shared.events]
    [clojure-finance-client.shared.subs]
-   [clojure-finance-client.views :as views]
+   [clojure-finance-client.shared.views :as views]
    [re-frame.core :as rf]
    [reagent.dom.client :as rdom]))
 
