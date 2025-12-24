@@ -3,16 +3,19 @@
    [clojure-finance-client.shared.api :as api]
    [clojure.string :as str]
    [day8.re-frame.http-fx]
-   [re-frame.core :as rf]
-   [reitit.frontend.easy :as rfe]))
+   [re-frame.core :as rf]))
+
+(def session-flag "finance-app/has-session")
+
+;; LOGIN
 
 (rf/reg-event-db
- :set-login-field
+ :login-view/set-login-field
  (fn [db [_ field value]]
    (assoc-in db [:login/login-form field] value)))
 
 (rf/reg-event-fx
- :login-request
+ :login/login-request
  (fn [{:keys [db]} _]
    (let [credentials (:login/login-form db)
          {:keys [email password]} credentials]
@@ -25,30 +28,41 @@
        {:db (assoc db :login/loading? true :login/error nil)
         :http-xhrio (api/login
                      credentials
-                     [:login-success]
+                     [:login/login-success]
                      [:api/handle-failure])}))))
 
 (rf/reg-event-fx
- :login-success
+ :login/login-success
  (fn [{:keys [db]} [_ response]]
-   (let [user (:user response)
-         token (:access-token response)
+   (let [user response
          role (keyword (:role user))]
 
-     (.setItem js/localStorage "token" token)
+     (.setItem js/localStorage session-flag "true")
 
      {:db (-> db
-              (assoc :current-user user)
+              (assoc :user/current-user user)
+              (assoc :user/current-user-id (:id user))
               (assoc :login/loading? false)
+              (assoc :session-loaded? true)
               (dissoc :login/login-form))
-      :dispatch [:navigate-by-role role]})))
+      :dispatch [:route/navigate-by-role role]})))
+
+;; LOGOUT
 
 (rf/reg-event-fx
- :navigate-by-role
- (fn [_ [_ role]]
-   (let [route (cond
-                 (= role :admin)    :admin
-                 (= role :customer) :customer
-                 :else              :login)]
-     (rfe/push-state route)
-     {})))
+ :login/logout
+ (fn [{:keys [db]} _]
+   {:http-xhrio (api/logout [:login/logout-success] [:login/logout-success])
+    :db (assoc db :loading? true)}))
+
+(rf/reg-event-fx
+ :login/logout-success
+ (fn [{:keys [db]} _]
+   (.removeItem js/localStorage session-flag)
+
+   {:db (-> db
+            (dissoc :user/current-user)
+            (dissoc :user/current-user-id)
+            (assoc :loading? false)
+            (assoc :session-loaded? true))
+    :dispatch [:route/navigate-to-login]}))

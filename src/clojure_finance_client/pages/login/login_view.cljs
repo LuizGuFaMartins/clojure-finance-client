@@ -36,7 +36,7 @@
              {:type "email"
               :placeholder "seu@email.com"
               :value (:email @form-data)
-              :on-change #(rf/dispatch [:set-login-field :email (-> % .-target .-value)])
+              :on-change #(rf/dispatch [:login-view/set-login-field :email (-> % .-target .-value)])
               :disabled @loading?
               :class (str "w-full mt-1 rounded-lg bg-slate-700 text-white placeholder-slate-500 "
                           "border border-slate-600 px-4 py-2 focus:outline-none "
@@ -49,7 +49,7 @@
              {:type "password"
               :placeholder "••••••••"
               :value (:password @form-data)
-              :on-change #(rf/dispatch [:set-login-field :password (-> % .-target .-value)])
+              :on-change #(rf/dispatch [:login-view/set-login-field :password (-> % .-target .-value)])
               :disabled @loading?
               :class (str "w-full mt-1 rounded-lg bg-slate-700 text-white placeholder-slate-500 "
                           "border border-slate-600 px-4 py-2 focus:outline-none "
@@ -63,7 +63,7 @@
                             "bg-slate-600 cursor-not-allowed opacity-70"
                             "bg-blue-600 hover:bg-blue-700 active:transform active:scale-95 shadow-lg shadow-blue-900/20"))
               :disabled (or fields-empty? @loading?)
-              :on-click #(rf/dispatch [:login-request])}
+              :on-click #(rf/dispatch [:login/login-request])}
 
              (if @loading?
                [:span {:class "flex items-center"}

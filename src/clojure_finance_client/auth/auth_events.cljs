@@ -1,63 +1,61 @@
 (ns clojure-finance-client.auth.auth-events
   (:require
-   [clojure-finance-client.shared.db :as db]
-   [clojure.string :as s]
-   [re-frame.core :as rf]
-   [reitit.frontend.easy :as rfe]))
+   [clojure-finance-client.shared.api :as api]
+   [re-frame.core :as rf]))
 
-(defn decode-jwt [token]
-  (try
-    (let [payload (second (clojure.string/split token #"\."))
-          json-str (js/window.atob payload)
-          claims (js->clj (.parse js/JSON json-str) :keywordize-keys true)
-          exp (:exp claims)
-          now (/ (.now js/Date) 1000)]
-      (if (and exp (< now exp))
-        claims
-        (do (js/console.warn "Token expirado") nil)))
-    (catch js/Error e
-      (js/console.error "Token inválido" e)
-      nil)))
+(def session-flag "finance-app/has-session")
+
+;; --- Sessão (Inicialização) ---
 
 (rf/reg-event-db
- :auth/check-session
+ :session-skipped
  (fn [db _]
-   (let [token (.getItem js/localStorage "token")
-         claims (when token (decode-jwt token))]
-     (if claims
-       (assoc db :current-user claims
-              :current-user-id (:id claims))
-       (do
-         (.removeItem js/localStorage "token")
-         (dissoc db :current-user :current-user-id))))))
+   (-> db
+       (assoc :session-loaded? true)
+       (assoc :user/current-user nil))))
 
 (rf/reg-event-fx
- :auth/logout
+ :initialize-session
  (fn [{:keys [db]} _]
-   (.removeItem js/localStorage "token")
-   {:db (-> db
-            (dissoc :current-user)
-            (dissoc :current-user-id))
-    :dispatch [:navigate-to-login]}))
+   {:db (assoc db :session-loaded? false)
+    :http-xhrio (api/get-self [:load-session-success] [:load-session-failed])}))
 
 (rf/reg-event-fx
- :navigate-to-login
- (fn [_ _]
-   (rfe/replace-state :login)
-   {}))
+ :load-session-success
+ (fn [{:keys [db]} [_ user-data]]
+   (let [user-id (:id user-data)]
+     {:db (-> db
+              (assoc :user/current-user user-data)
+              (assoc :user/current-user-id user-id)
+              (assoc :session-loaded? true))
+      ;; Após carregar os dados, pedimos para re-avaliar a rota atual
+      :dispatch [:route/re-evaluate-current-route]})))
+
+(rf/reg-event-fx
+ :load-session-failed
+ (fn [{:keys [db]} _]
+   {:db (assoc db :session-loaded? true :user/current-user nil)
+    :dispatch [:route/re-evaluate-current-route]}))
+
+(rf/reg-event-fx
+ :route/re-evaluate-current-route
+ (fn [{:keys [db]} _]
+   (let [current-match (:current-route db)]
+     (if current-match
+       {:dispatch [:route/handle-navigation current-match]}
+       {}))))
+
+;; --- Erros Globais ---
 
 (rf/reg-event-fx
  :api/handle-failure
  (fn [{:keys [db]} [_ {:keys [status] :as error}]]
    (js/console.error "Erro na API:" error)
-   (let [base-db (assoc db :login/loading? false
-                        :user/loading? false
+   (let [base-db (assoc db :loading? false
                         :login/error "Usuário ou senha inválidos")]
      (if (= status 401)
-       {:db base-db
-        :dispatch [:auth/logout]}
+       (do
+         (.removeItem js/localStorage session-flag)
+         {:db base-db
+          :dispatch [:login/logout]})
        {:db base-db}))))
-
-
-   
-

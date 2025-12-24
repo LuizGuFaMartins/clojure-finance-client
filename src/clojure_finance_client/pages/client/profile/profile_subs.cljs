@@ -18,9 +18,9 @@
    (:user/loading? db)))
 
 (rf/reg-sub
- :current-user-id
+ :user/current-user-id
  (fn [db _]
-   (get-in db [:current-user :id])))
+   (get-in db [:user/current-user :id])))
 
 (rf/reg-sub
  :bank-data/users

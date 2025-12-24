@@ -4,24 +4,19 @@
 
 (def base-url "http://localhost:8080")
 
-(defn- get-token []
-  (.getItem js/localStorage "token"))
-
-;; Auxiliar para GET
 (defn- auth-get [uri on-success on-error]
   {:method          :get
    :uri             (str base-url uri)
-   :headers         {"Authorization" (str "Bearer " (get-token))}
+   :with-credentials true
    :response-format (ajax/json-response-format {:keywords? true})
    :on-success      on-success
    :on-failure      on-error})
 
-;; Auxiliar para POST/PUT/PATCH/DELETE com JSON
 (defn- auth-send [method uri params on-success on-error]
   {:method          method
    :uri             (str base-url uri)
    :params          params
-   :headers         {"Authorization" (str "Bearer " (get-token))}
+   :with-credentials true
    :format          (ajax/json-request-format)
    :response-format (ajax/json-response-format {:keywords? true})
    :on-success      on-success
@@ -30,8 +25,13 @@
 ;; --- Autenticação & Recuperação (Públicos) ---
 
 (defn login [credentials on-success on-error]
-  ;; Login não usa token no header, mas envia JSON
   (auth-send :post "/login" credentials on-success on-error))
+
+(defn get-self [on-success on-error]
+  (auth-get "/auth/me" on-success on-error))
+
+(defn logout [on-success on-error]
+  (auth-send :post "/logout" nil on-success on-error))
 
 (defn request-password-code [params on-success on-error]
   (auth-send :post "/forgot-password/request" params on-success on-error))
@@ -65,6 +65,7 @@
   (auth-send :delete (str "/users/" user-id) nil on-success on-error))
 
 ;; --- Bank data ---
+
 (defn create-bank-data [bank-data on-success on-error]
   (auth-send :post "/bank-data" bank-data on-success on-error))
 
