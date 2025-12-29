@@ -4,6 +4,20 @@
    [re-frame.core :as rf]
    [reagent.core :as reagent]))
 
+(defn password-requirements [errors]
+  (let [reqs [{:key "Mínimo de 8 caracteres" :label "8+ caracteres"}
+              {:key "Uma letra maiúscula"    :label "Maiúscula"}
+              {:key "Uma letra minúscula"    :label "Minúscula"}
+              {:key "Um número"              :label "Número"}
+              {:key "Um caractere especial"  :label "Especial"}]]
+    [:div {:class "mt-2 grid grid-cols-2 gap-y-1"}
+     (for [r reqs]
+       (let [failed? (some #(= (:key r) %) errors)]
+         [:div {:key (:key r) :class "flex items-center gap-1.5"}
+          [:div {:class (str "w-1.5 h-1.5 rounded-full " (if failed? "bg-slate-700" "bg-emerald-500"))}]
+          [:span {:class (str "text-[12px] " (if failed? "text-slate-500" "text-emerald-500"))}
+           (:label r)]]))]))
+
 (defn user-modal []
   (let [modal @(rf/subscribe [:admin/modal])
         form  @(rf/subscribe [:admin/user-form])
@@ -21,15 +35,11 @@
           [:input {:class "w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                    :value (:name form) :on-change #(rf/dispatch [:admin/set-form-field :name (-> % .-target .-value)])}]]
 
-         [:div {:class "grid grid-cols-2 gap-4"}
+         [:div {:class "grid grid-cols-1 gap-4"}
           [:div
            [:label {:class "block text-xs font-medium text-slate-400 mb-1"} "Email"]
            [:input {:class "w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white outline-none"
-                    :value (:email form) :on-change #(rf/dispatch [:admin/set-form-field :email (-> % .-target .-value)])}]]
-          [:div
-           [:label {:class "block text-xs font-medium text-slate-400 mb-1"} "Senha"]
-           [:input {:type "password" :class "w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white outline-none"
-                    :value (:password form) :on-change #(rf/dispatch [:admin/set-form-field :password (-> % .-target .-value)])}]]]
+                    :value (:email form) :on-change #(rf/dispatch [:admin/set-form-field :email (-> % .-target .-value)])}]]]
 
          [:div {:class "grid grid-cols-2 gap-4"}
           [:div
@@ -39,14 +49,32 @@
           [:div
            [:label {:class "block text-xs font-medium text-slate-400 mb-1"} "Telefone"]
            [:input {:class "w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white outline-none"
-                    :value (:phone form) :on-change #(rf/dispatch [:admin/set-form-field :phone (-> % .-target .-value)])}]]]]
+                    :value (:phone form) :on-change #(rf/dispatch [:admin/set-form-field :phone (-> % .-target .-value)])}]]]
+
+         [:div {:class "grid grid-cols-1 gap-4"}
+          (let [form-errors @(rf/subscribe [:admin/form-errors])
+                pass-errs   (get-in form-errors [:password :errors])]
+            [:div
+             [:label {:class "block text-xs font-medium text-slate-400 mb-1"} "Senha"]
+             [:input {:type "password"
+                      :class "w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                      :value (:password form)
+                      :on-change #(rf/dispatch [:admin/set-form-field :password (-> % .-target .-value)])}]
+             [password-requirements pass-errs]])]]
 
         [:div {:class "p-6 bg-slate-900/50 flex justify-end gap-3"}
          [:button {:class "px-4 py-2 text-slate-400 hover:text-white transition"
                    :on-click #(rf/dispatch [:admin/close-modal])} "Cancelar"]
-         [:button {:class "bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-lg font-bold transition shadow-lg shadow-indigo-900/20"
-                   :on-click #(rf/dispatch [:admin/save-user]) :disabled loading?}
-          (if loading? "Salvando..." "Salvar Usuário")]]]])))
+
+         (let [errors @(rf/subscribe [:admin/form-errors])
+               password-valid? (get-in errors [:password :valid?])]
+           [:button {:class (str "px-6 py-2 rounded-lg font-bold transition "
+                                 (if (and password-valid? (not loading?))
+                                   "bg-indigo-600 hover:bg-indigo-500 text-white"
+                                   "bg-slate-800 text-slate-500 cursor-not-allowed"))
+                     :on-click #(rf/dispatch [:admin/save-user])
+                     :disabled (or loading? (not password-valid?))}
+            (if loading? "Salvando..." "Salvar Usuário")])]]])))
 
 (defn users-table [users]
   [:div {:class "overflow-x-auto mt-4"}

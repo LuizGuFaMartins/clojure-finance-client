@@ -10,3 +10,5 @@
 (rf/reg-sub :admin/modal (fn [db _] (:admin/modal db)))
 
 (rf/reg-sub :admin/user-form (fn [db _] (:admin/user-form db)))
+
+(rf/reg-sub :admin/form-errors (fn [db _] (:admin/form-errors db)))

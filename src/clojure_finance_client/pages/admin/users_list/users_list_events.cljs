@@ -1,6 +1,7 @@
 (ns clojure-finance-client.pages.admin.users-list.users-list-events
   (:require
    [clojure-finance-client.shared.api :as api]
+   [clojure-finance-client.shared.utils :refer [validate-password]]
    [day8.re-frame.http-fx]
    [re-frame.core :as rf]))
 
@@ -35,7 +36,10 @@
 (rf/reg-event-db
  :admin/set-form-field
  (fn [db [_ field value]]
-   (assoc-in db [:admin/user-form field] value)))
+   (let [new-db (assoc-in db [:admin/user-form field] value)]
+     (if (= field :password)
+       (assoc-in new-db [:admin/form-errors :password] (validate-password value))
+       new-db))))
 
 (rf/reg-event-fx
  :admin/save-user

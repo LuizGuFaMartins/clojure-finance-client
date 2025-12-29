@@ -28,7 +28,6 @@
               (assoc :user/current-user user-data)
               (assoc :user/current-user-id user-id)
               (assoc :session-loaded? true))
-      ;; Após carregar os dados, pedimos para re-avaliar a rota atual
       :dispatch [:route/re-evaluate-current-route]})))
 
 (rf/reg-event-fx

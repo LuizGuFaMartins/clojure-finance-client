@@ -73,10 +73,12 @@
                 "Autenticando..."]
                "Entrar")]]]
 
-          [:p {:class "mt-6 text-slate-500 text-xs text-center"}
-           "Esqueceu sua senha? " [:a {:href "#"
-                                       :class "text-blue-400 hover:underline"
-                                       :on-click (fn [e]
-                                                   (.preventDefault e)
-                                                   (rfe/push-state :forgot-password))}
-                                   "Recuperar"]]]]))}))
+          ;; [:p {:class "mt-6 text-slate-500 text-xs text-center"}
+          ;;  "Esqueceu sua senha? " [:a {:href "#"
+          ;;                              :class "text-blue-400 hover:underline"
+          ;;                              :on-click (fn [e]
+          ;;                                          (.preventDefault e)
+          ;;                                          (rfe/push-state :forgot-password))}
+          ;;                          "Recuperar"]]
+          
+          ]]))}))

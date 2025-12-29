@@ -29,7 +29,7 @@
          public?         (:public? data)]
 
      (cond
-       ;; AQUI ESTÁ O SEGREDO: Se a sessão ainda não carregou (F5), 
+       ;; AQUI ESTÁ O SEGREDO: Se a sessão ainda não carregou (F5),
        ;; guardamos a rota mas NÃO validamos nada ainda.
        (not session-loaded?)
        {:db (assoc db :current-route new-match)}
