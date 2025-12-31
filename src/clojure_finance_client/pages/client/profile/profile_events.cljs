@@ -76,5 +76,5 @@
 (rf/reg-event-fx
  :bank-data/delete
  (fn [{:keys [db]} [_ id]]
-   {:db (assoc db :user/loading? true)
+   {:db (assoc db :user/loading? true :user/bank-data nil) 
     :http-xhrio (api/delete-bank-data id [:bank-data/save-success] [:api/handle-failure])}))

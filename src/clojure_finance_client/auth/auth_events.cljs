@@ -49,7 +49,6 @@
 (rf/reg-event-fx
  :api/handle-failure
  (fn [{:keys [db]} [_ {:keys [status] :as error}]]
-   (js/console.error "Erro na API:" error)
    (let [base-db (assoc db :loading? false
                         :login/error "Usuário ou senha inválidos")]
      (if (= status 401)

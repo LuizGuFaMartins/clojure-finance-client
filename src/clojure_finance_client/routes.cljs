@@ -8,10 +8,13 @@
    [reitit.frontend :as rt]
    [reitit.frontend.easy :as rfe]))
 
-(rf/reg-event-db
- :route/navigate
- (fn [db [_ route]]
-   (assoc db :current-route route)))
+(def routes
+  (rt/router
+   [""
+    ["/" {:name :login :view login/page :public? true}]
+    ["/forgot-password" {:name :forgot-password :view forgot-password/page :public? true}]
+    ["/admin" {:name :admin :view users-list/page :roles #{:admin}}]
+    ["/profile" {:name :profile :view profile/page :roles #{:customer}}]]))
 
 (rf/reg-sub
  :current-route
@@ -29,24 +32,18 @@
          public?         (:public? data)]
 
      (cond
-       ;; AQUI ESTÁ O SEGREDO: Se a sessão ainda não carregou (F5),
-       ;; guardamos a rota mas NÃO validamos nada ainda.
        (not session-loaded?)
        {:db (assoc db :current-route new-match)}
 
-       ;; Se já carregou e é pública (Login), deixa passar
        public?
        {:db (assoc db :current-route new-match)}
 
-       ;; Se já carregou e não tem usuário, chuta pro Login
        (not user)
        {:dispatch [:login/navigate-to-login]}
 
-       ;; Se já carregou e a role não bate, redireciona pelo cargo
        (and required-roles (not (contains? required-roles user-role)))
        {:dispatch [:route/redirect-by-role user-role]}
 
-       ;; Caso contrário, tudo OK
        :else
        {:db (assoc db :current-route new-match)}))))
 
@@ -73,17 +70,8 @@
      (rfe/push-state route)
      {})))
 
-(def routes
-  (rt/router
-   [""
-    ["/" {:name :login :view login/page :public? true}]
-    ["/forgot-password" {:name :forgot-password :view forgot-password/page :public? true}]
-    ["/admin" {:name :admin :view users-list/page :roles #{:admin}}]
-    ["/profile" {:name :profile :view profile/page :roles #{:customer}}]]))
-
 (defn on-navigate [new-match]
   (when new-match
-    ;; Não decidimos nada aqui. Enviamos para o Re-frame decidir.
     (rf/dispatch [:route/handle-navigation new-match])))
 
 (defn init-routes []
