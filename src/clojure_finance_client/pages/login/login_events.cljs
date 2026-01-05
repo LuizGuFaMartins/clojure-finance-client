@@ -1,6 +1,7 @@
 (ns clojure-finance-client.pages.login.login-events
   (:require
    [clojure-finance-client.shared.api :as api]
+   [clojure-finance-client.shared.db :refer [default-db]]
    [clojure.string :as str]
    [day8.re-frame.http-fx]
    [re-frame.core :as rf]))
@@ -57,12 +58,7 @@
 
 (rf/reg-event-fx
  :login/logout-success
- (fn [{:keys [db]} _]
+ (fn [_ _]
    (.removeItem js/localStorage session-flag)
-
-   {:db (-> db
-            (dissoc :user/current-user)
-            (dissoc :user/current-user-id)
-            (assoc :loading? false)
-            (assoc :session-loaded? true))
+   {:db       default-db
     :dispatch [:route/navigate-to-login]}))

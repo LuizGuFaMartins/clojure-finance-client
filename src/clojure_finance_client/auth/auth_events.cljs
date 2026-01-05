@@ -49,9 +49,12 @@
 (rf/reg-event-fx
  :api/handle-failure
  (fn [{:keys [db]} [_ {:keys [status] :as error}]]
-   (let [base-db (assoc db :loading? false
-                        :login/error "Usuário ou senha inválidos")]
-     (if (= status 401)
+   (let [base-db (assoc db
+                        :login/loading? false
+                        :login/error "Usuário ou senha inválidos")         
+         has-session? (.getItem js/localStorage "finance-app/has-session")]
+     
+     (if (and (= status 401) has-session?)
        (do
          (.removeItem js/localStorage session-flag)
          {:db base-db

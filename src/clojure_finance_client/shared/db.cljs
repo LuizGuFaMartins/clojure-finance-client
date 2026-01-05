@@ -5,7 +5,7 @@
    :login/loading? false
    :login/error nil
 
-   :session-loaded? false
+   :session-loaded? true
    
    :password-reset/password-reset-form {:password "" :confirm-password ""}
    :password-reset/loading? false
