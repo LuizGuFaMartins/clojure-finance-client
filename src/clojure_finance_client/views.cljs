@@ -28,16 +28,7 @@
    [:h2 {:class "text-2xl font-bold text-white mb-2"}
     "Página não encontrada"]
    [:p {:class "text-slate-400 max-w-md mb-8 leading-relaxed"}
-    "O link que você tentou acessar pode estar quebrado ou a página foi movida para outro endereço."]
-
-   [:button
-    {:on-click #(rf/dispatch [:route/handle-navigation {:data {:name :login}}]) ;
-     :class "group relative flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 
-             text-white rounded-xl transition-all duration-300 border border-slate-700"}
-    [:svg {:class "w-5 h-5 text-blue-400 group-hover:-translate-x-1 transition-transform"
-           :fill "none" :stroke "currentColor" :viewBox "0 0 24 24"}
-     [:path {:stroke-linecap "round" :stroke-linejoin "round" :stroke-width "2" :d "M10 19l-7-7m0 0l7-7m-7 7h18"}]]
-    "Voltar para o início"]])
+    "O link que você tentou acessar pode estar quebrado ou a página foi movida para outro endereço."]])
 
 (defn root []
   (let [route           @(rf/subscribe [:current-route])

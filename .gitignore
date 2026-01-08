@@ -26,3 +26,5 @@ pom.xml.asc
 .hg/
 .clj-kondo/
 .cpcache/
+
+.calva/*
