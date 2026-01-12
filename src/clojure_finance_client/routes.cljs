@@ -39,7 +39,7 @@
        {:db (assoc db :current-route new-match)}
 
        (not user)
-       {:dispatch [:login/navigate-to-login]}
+       {:dispatch [:route/navigate-to-login]}
 
        (and required-roles (not (contains? required-roles user-role)))
        {:dispatch [:route/redirect-by-role user-role]}

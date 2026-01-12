@@ -6,7 +6,7 @@
    :login/error nil
 
    :session-loaded? true
-   
+
    :password-reset/password-reset-form {:password "" :confirm-password ""}
    :password-reset/loading? false
    :password-reset/error nil
@@ -23,4 +23,9 @@
    :confirmation-modal {:show? false
                         :title ""
                         :message ""
-                        :on-confirm nil}})
+                        :on-confirm nil}
+
+   :transactions []
+   :transactions-loading? false
+   :transactions-filters {:type "all"
+                          :days "30"}})
