@@ -53,7 +53,7 @@
 (rf/reg-sub
  :transactions/filters
  (fn [db _]
-   (:transactions-filters db)))
+   (:transactions/filters db)))
 
 (rf/reg-sub 
  :transactions/modal 

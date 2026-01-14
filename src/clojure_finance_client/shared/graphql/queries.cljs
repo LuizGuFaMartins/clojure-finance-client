@@ -1,19 +1,19 @@
 (ns clojure-finance-client.shared.graphql.queries)
 
 (def list-my-transactions
-  "query GetMyTransactions {
-    my_transactions {
+  "query GetMyTransactions($days: Int, $type: String) {
+    my_transactions(days: $days, type: $type) {
      id
      amount
      status
      created_at
      from_user {
        id
-       email
+       name
      }
      to_user {
        id
-       email
+       name
      }
    }
   }")

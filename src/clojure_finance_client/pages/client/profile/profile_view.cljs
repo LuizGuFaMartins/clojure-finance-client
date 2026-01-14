@@ -142,7 +142,6 @@
       [:div {:class "fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"}
        [:div {:class "w-500 bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden"}
 
-        ;; Header com Ícone de Dinheiro
         [:div {:class "p-6 text-center border-b border-slate-800/50"}
          [:div {:class "w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-3"}
           [:svg {:class "w-6 h-6" :fill "none" :stroke "currentColor" :viewBox "0 0 24 24"}
@@ -153,33 +152,30 @@
 
         [:div {:class "p-6 space-y-6"}
 
-         ;; --- Campo: ID do Destinatário ---
          [:div
           [:label {:class "block text-[10px] uppercase font-bold text-slate-500 mb-2 ml-1"} "ID do Destinatário"]
           [:input {:type "text"
                    :placeholder "Ex: 550e8400-e29b..."
                    :class "w-full bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-white font-mono outline-none focus:ring-2 focus:ring-indigo-500/50 transition placeholder:text-slate-800"
-                   :value (or (:to-user form) "")
-                   :on-change #(rf/dispatch [:transactions/set-form-field :to-user (-> % .-target .-value)])}]]
+                   :value (or (:to_user form) "")
+                   :on-change #(rf/dispatch [:transactions/set-form-field :to_user (-> % .-target .-value)])}]]
 
-         ;; --- Campo: Valor ---
          [:div
           [:label {:class "block text-[10px] uppercase font-bold text-slate-500 mb-2 ml-1"} "Valor"]
           [:div {:class "relative"}
            [:span {:class "absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 font-bold text-xl"} "R$"]
            [:input {:type "number" :step "0.01" :placeholder "0,00"
                     :class "w-full bg-slate-950 border border-slate-800 rounded-2xl pl-14 pr-4 py-5 text-3xl font-mono text-emerald-400 outline-none focus:ring-2 focus:ring-emerald-500/50 transition shadow-inner"
-                    :value (or (:amount form) "")
+                    :value (or (:amount form) nil)
                     :on-change #(rf/dispatch [:transactions/set-form-field :amount (-> % .-target .-value)])}]]]
 
-         ;; Botões de Ação
          [:div {:class "p-6 pt-0 space-y-3"}
           [:button {:class (str "w-full py-4 rounded-2xl font-bold text-sm transition-all active:scale-[0.98] shadow-lg "
-                                (if (or loading? (empty? (str (:to-user form))) (empty? (str (:amount form))))
+                                (if (or loading? (empty? (str (:to_user form))) (empty? (str (:amount form))))
                                   "bg-slate-800 text-slate-600 cursor-not-allowed"
                                   "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-900/20"))
                     :on-click #(rf/dispatch [:transactions/save])
-                    :disabled (or loading? (empty? (str (:to-user form))) (empty? (str (:amount form))))}
+                    :disabled (or loading? (empty? (str (:to_user form))) (empty? (str (:amount form))))}
            (if loading?
              [:div {:class "flex items-center justify-center gap-2"}
               [:div {:class "w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"}]
@@ -245,7 +241,12 @@
 
        :else [:div {:class "space-y-3"}
               (for [tx transactions]
-                (let [is-debit? (= (:from_user tx) user-id)]
+                (let [from-id    (get-in tx [:from_user :id])
+                      is-debit?  (= (str from-id) (str user-id))
+
+                      date-raw   (:created_at tx)
+                      date-str   (if date-raw (subs date-raw 0 10) "---")]
+
                   ^{:key (:id tx)}
                   [:div {:class "bg-slate-900/30 hover:bg-slate-900/60 border border-slate-800/40 p-4 rounded-2xl flex justify-between items-center transition-all group"}
                    [:div {:class "flex items-center gap-4"}
@@ -254,10 +255,13 @@
                       (if is-debit?
                         [:path {:stroke-width "2" :d "M16 17l-4 4m0 0l-4-4m4 4V3"}]
                         [:path {:stroke-width "2" :d "M8 7l4-4m0 0l4 4m-4-4v18"}])]]
+
                     [:div
                      [:p {:class "text-slate-200 text-sm font-medium"}
-                      (if is-debit? (str "Para: " (get-in tx [:to_user :name])) "Recebido via Ledger")]
-                     [:p {:class "text-slate-600 text-[10px]"} (subs (:created-at tx) 0 10)]]]
+                      (if is-debit?
+                        (str "Para: " (get-in tx [:to_user :name]))
+                        (str "De: "   (get-in tx [:from_user :name])))]
+                     [:p {:class "text-slate-600 text-[10px]"} date-str]]]
 
                    [:div {:class "text-right"}
                     [:p {:class (str "font-mono font-bold " (if is-debit? "text-slate-200" "text-emerald-400"))}

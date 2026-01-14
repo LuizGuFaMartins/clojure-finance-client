@@ -7,8 +7,7 @@
 (defn- auth-gql [query variables on-success on-error]
   {:method          :post
    :uri             (str base-url "/graphql")
-   :params          {:query     query
-                     :variables variables}
+   :params          {:query query :variables variables}
    :with-credentials true
    :format          (ajax/json-request-format)
    :response-format (ajax/json-response-format {:keywords? true})
@@ -16,7 +15,6 @@
    :on-failure      on-error})
 
 ;; --- Transações ---
-
 (defn fetch-transactions [variables on-success on-error]
   (auth-gql
    queries/list-my-transactions

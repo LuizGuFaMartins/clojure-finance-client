@@ -87,36 +87,44 @@
    {:db (assoc db :user/loading? true :user/bank-data nil)
     :http-xhrio (api/delete-bank-data id [:bank-data/save-success] [:api/handle-failure])}))
 
-;; Transactions
+
+;; ====== TRANSACTIONS ======
 (rf/reg-event-fx
  :transactions/load
  (fn [{:keys [db]} _]
-   (let [filters (:transactions-filters db)]
-     {:db (assoc db :transactions-loading? true)
+   (let [filters (:transactions/filters db)]
+     {:db (assoc db :transactions/loading? true)
       :http-xhrio (api-gql/fetch-transactions
                    (cond-> {}
-                     (not= (:type filters) "all") (assoc :type (:type filters))
-                     (:days filters)              (assoc :days (js/parseInt (:days filters))))
+                     (and (:type filters) (not= (:type filters) "all"))
+                     (assoc :type (:type filters))
+
+                     (:days filters) (assoc :days (js/parseInt (:days filters))))
                    [:transactions/load-success]
                    [:api/handle-failure])})))
 
 (rf/reg-event-db
  :transactions/load-success
- (fn [db [_ bank-data]]
-   (-> db
-       (assoc :user/bank-data bank-data)
-       (assoc :user/loading? false))))
+ (fn [db [_ response]]
+   (let [transactions (get-in response [:data :my_transactions])]
+     (-> db
+         (assoc :transactions/list transactions)
+         (assoc :transactions/loading? false)))))
 
+;; --- FILTROS ---
 (rf/reg-event-fx
  :transactions/set-filter
  (fn [{:keys [db]} [_ key value]]
-   {:db (assoc-in db [:transactions-filters key] value)
+   {:db (assoc-in db [:transactions/filters key] value)
     :dispatch [:transactions/load]}))
 
+;; --- MODAL E FORMULÁRIO ---
 (rf/reg-event-db
  :transactions/open-modal
  (fn [db _]
-   (assoc-in db [:transactions/modal :show?] true)))
+   (-> db
+       (assoc-in [:transactions/modal :show?] true)
+       (assoc :transactions/form {:to_user "" :amount nil}))))
 
 (rf/reg-event-db
  :transactions/close-modal
@@ -128,24 +136,35 @@
  (fn [db [_ field value]]
    (assoc-in db [:transactions/form field] value)))
 
+;; --- SALVAMENTO (CREATE) ---
 (rf/reg-event-fx
  :transactions/save
  (fn [{:keys [db]} _]
-   (let [form (:transactions-form db)
-         user-id (get-in db [:user :profile :id])]
-     {:db (assoc db :transactions-loading? true)
+   (let [form (:transactions/form db)
+         input-params {:to_user (:to_user form)
+                        :amount  (js/parseFloat (:amount form))}]
+     {:db (assoc db :transactions/loading? true)
       :http-xhrio (api-gql/send-transaction
-                   {:from_user user-id
-                    :to_user   (:to-user form)
-                    :amount    (:amount form)
-                    :status    (:status form)}
+                   input-params
                    [:transactions/save-success]
                    [:transactions/save-failure])})))
 
 (rf/reg-event-fx
  :transactions/save-success
- (fn [{:keys [db]} _]
-   {:db (assoc db :transactions-loading? false)
-    :dispatch-n [[:transactions/close-modal]
-                 [:transactions/load] ;; Recarrega a lista
-                 [:user/load (:id (:user-profile db))]]})) ;; Atualiza o saldo
+ (fn [{:keys [db]} [_ response]]
+   (let [user-id (get-in db [:user/profile :id])
+         errors  (:errors response)]
+     (if errors
+       {:db (assoc db :transactions/loading? false
+                   :transactions/error (get-in errors [0 :message]))}
+
+       {:db (assoc db :transactions/loading? false :transactions/error nil)
+        :dispatch-n [[:transactions/close-modal]
+                     [:transactions/load]
+                     [:user/load user-id]]}))))
+
+(rf/reg-event-db
+ :transactions/save-failure
+ (fn [db [_ _]]
+   (assoc db :transactions/loading? false
+          :transactions/error "Erro de conexão com o servidor.")))

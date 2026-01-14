@@ -26,6 +26,7 @@
                         :on-confirm nil}
 
    :transactions []
-   :transactions-loading? false
-   :transactions-filters {:type "all"
+   :transactions/loading? false
+   :transactions/form {:to_user nil :amount nil}
+   :transactions/filters {:type "all"
                           :days "30"}})
