@@ -1,7 +1,8 @@
 {:paths ["src" "resources"]
 
  :deps
- {reagent/reagent         {:mvn/version "1.2.0"}
+ {aero/aero {:mvn/version "1.1.6"}
+  reagent/reagent         {:mvn/version "1.2.0"}
   re-frame/re-frame       {:mvn/version "1.4.3"}
   day8.re-frame/http-fx   {:mvn/version "0.2.4"}
   metosin/reitit-frontend {:mvn/version "0.9.2"}

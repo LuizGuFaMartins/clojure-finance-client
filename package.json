@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "clean": "rm -rf resources/public/js resources/public/css .shadow-cljs",
-    "tailwind:watch": "tailwindcss -i ./public/index.css -o ./resources/public/css/app.css --watch",
-    "tailwind:release": "tailwindcss -i ./public/index.css -o ./resources/public/css/app.css --minify",
+    "clean": "rm -rf resources/static/js resources/static/css .shadow-cljs",
+    "tailwind:watch": "tailwindcss -i ./public/index.css -o ./resources/static/css/app.css --watch",
+    "tailwind:release": "tailwindcss -i ./public/index.css -o ./resources/static/css/app.css --minify",
     "shadow:watch": "shadow-cljs -A:dev watch app",
     "shadow:release": "shadow-cljs -A:final release app",
     "dev": "npm-run-all --parallel tailwind:watch shadow:watch",

@@ -261,6 +261,10 @@
                       (if is-debit?
                         (str "Para: " (get-in tx [:to_user :name]))
                         (str "De: "   (get-in tx [:from_user :name])))]
+                     [:p {:class "text-slate-200 text-sm font-medium"}
+                      (if is-debit?
+                        (str "ID: " (get-in tx [:to_user :id]))
+                        (str "ID: " (get-in tx [:from_user :id])))]
                      [:p {:class "text-slate-600 text-[10px]"} date-str]]]
 
                    [:div {:class "text-right"}

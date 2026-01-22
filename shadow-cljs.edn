@@ -1,7 +1,7 @@
 {:deps true ;; Usa o deps.edn como fonte de verdade para bibliotecas
 
  :dev-http
- {3000 "resources/public"} ;; Porta do servidor e pasta onde está o index.html
+ {3000 "resources/static"} ;; Porta do servidor e pasta onde está o index.html
 
  :nrepl
  {:port 8778} ;; Porta para conectar o VSCode/IntelliJ ao REPL do Front
@@ -9,7 +9,7 @@
  :builds
  {:app
   {:target     :browser
-   :output-dir "resources/public/js" ;; Onde o JS compilado será salvo
+   :output-dir "resources/static/js" ;; Onde o JS compilado será salvo
    :asset-path "/js"                 ;; Caminho relativo para o navegador achar os arquivos
 
    :modules

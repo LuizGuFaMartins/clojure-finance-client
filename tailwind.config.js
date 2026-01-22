@@ -2,7 +2,7 @@
 
 module.exports = {
   content: [
-    "./resources/public/index.html",
+    "./resources/static/index.html",
     "./src/**/*.{cljs,cljc,edn}",
   ],
   theme: {
