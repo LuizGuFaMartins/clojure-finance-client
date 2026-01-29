@@ -1,2 +1,2 @@
 {:api {:base-url #or [#env API_URL "http://localhost:8080"]}
- :auth-api {:base-url #or [#env API_URL "http://localhost:8083"]}}
+ :auth-api {:base-url #or [#env AUTH_API_URL "http://localhost:8083"]}}

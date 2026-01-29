@@ -1,0 +1,11 @@
+node_modules
+.shadow-cljs
+.cpcache
+.git
+.gitignore
+.calva
+.lsp
+.nrepl-port
+docker-compose.yml
+Dockerfile
+README.md
