@@ -3,13 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "clean": "rm -rf resources/static/js resources/static/css .shadow-cljs",
-    "tailwind:watch": "tailwindcss -i ./public/index.css -o ./resources/static/css/app.css --watch",
-    "tailwind:release": "tailwindcss -i ./public/index.css -o ./resources/static/css/app.css --minify",
-    "shadow:watch": "shadow-cljs -A:dev watch app",
-    "shadow:release": "shadow-cljs -A:final release app",
-    "dev": "npm-run-all --parallel tailwind:watch shadow:watch",
-    "build": "npm run tailwind:release && npm run shadow:release"
+    "clean": "rm -rf public/js public/css .shadow-cljs",
+    "build:css": "tailwindcss -i ./public/index.css -o ./public/css/main.css",
+    "build:js": "npx shadow-cljs release clojure-finance -A :final",
+    "build:js:debug": "npx shadow-cljs release :clojure-finance -A :final --debug",
+    "build": "npm-run-all build:js build:css",
+    "watch:css": "npm run build:css -- --watch",
+    "watch:js": "npx shadow-cljs watch :clojure-finance -A :dev",
+    "dev": "npm-run-all --parallel watch:*"
   },
   "dependencies": {
     "react": "^18.2.0",

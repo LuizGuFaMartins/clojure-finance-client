@@ -1,20 +1,20 @@
-{:deps true ;; Usa o deps.edn como fonte de verdade para bibliotecas
+{:nrepl
+ {:port 8778}
 
  :dev-http
- {3000 "resources/static"} ;; Porta do servidor e pasta onde está o index.html
+ {3000 ["public"]}
 
- :nrepl
- {:port 8778} ;; Porta para conectar o VSCode/IntelliJ ao REPL do Front
+ :source-paths ["src"]
+
+ :deps true
 
  :builds
- {:app
+ {:clojure-finance
   {:target     :browser
-   :output-dir "resources/static/js" ;; Onde o JS compilado será salvo
-   :asset-path "/js"                 ;; Caminho relativo para o navegador achar os arquivos
-
-   :modules
-   {:main {:init-fn clojure-finance-client.core/init}}
+   :output-dir "public/js"
+   :asset-path "/js"
+   :modules {:main {:init-fn clojure-finance-client.core/init}}
 
    :devtools
-   {:after-load clojure-finance-client.core/init ;; Função executada após cada salvamento
-    :preloads   [day8.re-frame-10x.preload]}}}} ;; Abre o painel de debug do re-frame
+   {:after-load clojure-finance-client.core/init
+    :preloads   [day8.re-frame-10x.preload]}}}}

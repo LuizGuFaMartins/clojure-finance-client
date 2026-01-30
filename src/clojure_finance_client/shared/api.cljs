@@ -64,7 +64,7 @@
   (auth-send :put  base-url(str "/users/" user-id) user-data on-success on-error))
 
 (defn delete-user [user-id on-success on-error]
-  (auth-send :dele base-url (str "/users/" user-id) nil on-success on-error))
+  (auth-send :delete base-url (str "/users/" user-id) nil on-success on-error))
 
 ;; --- Bank data ---
 
@@ -75,4 +75,4 @@
   (auth-send :put  base-url(str "/bank-data/" bank-data-id) bank-data on-success on-error))
 
 (defn delete-bank-data [bank-data-id on-success on-error]
-  (auth-send :dele base-url (str "/bank-data/" bank-data-id) nil on-success on-error))
+  (auth-send :delete base-url (str "/bank-data/" bank-data-id) nil on-success on-error))

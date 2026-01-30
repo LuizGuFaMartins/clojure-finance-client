@@ -3,7 +3,8 @@ node_modules/
 **/js
 **/css/main.css
 
-public/*.html
+public/js/*.js
+public/css/*.css
 
 /target
 /checkouts

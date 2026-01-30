@@ -5,6 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - AUTH_API_URL=${AUTH_API_URL}
+        - API_URL=${API_URL}
+        - NODE_ENV=production
     container_name: finance-client
     env_file:
       - .env

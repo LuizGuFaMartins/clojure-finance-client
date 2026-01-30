@@ -2,8 +2,8 @@
 
 module.exports = {
   content: [
-    "./resources/static/index.html",
-    "./src/**/*.{cljs,cljc,edn}",
+    "./public/index.html",
+    "./src/**/*.{cljs,cljc,edn}"
   ],
   theme: {
     extend: {},
